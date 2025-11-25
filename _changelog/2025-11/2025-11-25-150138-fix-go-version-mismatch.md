@@ -438,8 +438,24 @@ The change is backward compatible, requires no code modifications, and sets the 
 
 ---
 
-**Status**: ✅ Completed  
+**Status**: ⚠️ Incomplete - Superseded by updated fix  
 **Files Changed**: 4 (go.mod, Dockerfile, ci.yml, release.yml)  
 **Breaking Changes**: None  
 **Testing**: Local build verified, CI/CD pending next push  
-**Next Steps**: Monitor CI/CD pipeline on next commit to verify all workflows pass
+
+## Update (November 25, 2025)
+
+**This fix was incomplete.** While it standardized the Go version to 1.23, it did not account for the dependency requirement from `github.com/project-planton/project-planton v0.2.245`, which requires `go >= 1.24.7`.
+
+**Root cause of continued issues:**
+- The `project-planton` dependency has `go 1.24.7` in its go.mod
+- Running `go mod tidy` in this project automatically upgraded the Go version back to 1.24.7
+- This created a cycle where the fix would be undone by routine dependency management
+
+**Complete fix implemented:**
+- Updated go.mod to `go 1.24.7` (matching dependency requirements)
+- Updated Dockerfile to use `golang:1.25-alpine` (since Go 1.24 Docker images don't exist)
+- Aligned with Planton Cloud's stack-job-runner standard (Go 1.25.0)
+- Added comprehensive documentation in `docs/development.md`
+
+See the follow-up changelog for the complete solution that addresses the dependency chain issue.
