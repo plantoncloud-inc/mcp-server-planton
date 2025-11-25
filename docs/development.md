@@ -6,11 +6,54 @@ Guide for contributing to and developing the Planton Cloud MCP Server.
 
 ### Prerequisites
 
-- Go 1.22+
+- Go 1.25+ (recommended) or Go 1.24.7+ (minimum)
 - Git
 - Docker (optional, for container testing)
 - golangci-lint (optional, for linting)
 - Access to Planton Cloud APIs (local or remote)
+
+### Go Version Requirements
+
+This project uses Go 1.24.7 in `go.mod` to match the dependency requirements from `github.com/project-planton/project-planton`, but uses Go 1.25 for Docker builds and CI/CD.
+
+**Why this configuration?**
+
+- **go.mod specifies `go 1.24.7`**: This is required by the `project-planton` dependency. Go 1.24.7 is a toolchain version (not a stable release), set when running `go mod tidy` with Go 1.25+.
+- **Dockerfile uses `golang:1.25-alpine`**: Go 1.24 Docker images don't exist (since it's a toolchain version, not a release). Go 1.25 is backward compatible and is the official image that supports Go 1.24.7.
+- **Stack Job Runner uses Go 1.25.0**: This aligns with Planton Cloud's infrastructure standard (see `planton-cloud/backend/services/stack-job-runner/Dockerfile`).
+
+**For local development:**
+
+If you're using Go 1.25 or newer locally:
+- ✅ Everything works as-is
+- ⚠️ **Do NOT run `go mod tidy`** manually - it may try to update the Go version in go.mod
+- ✅ The CI/CD pipeline handles `go mod tidy` with the correct version during builds
+
+If you're using Go 1.24.7:
+- ✅ Works perfectly
+- ✅ You can run `go mod tidy` without issues
+
+If you're using Go 1.23 or older:
+- ❌ You'll see errors like `go.mod requires go >= 1.24.7`
+- 🔧 Solution: Upgrade to Go 1.25 or newer
+
+**Installing Go 1.25:**
+
+```bash
+# Download from official Go website
+wget https://go.dev/dl/go1.25.0.linux-amd64.tar.gz
+
+# Remove old version and install
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz
+
+# Verify installation
+go version  # Should show: go version go1.25.0 linux/amd64
+```
+
+**Docker builds:**
+
+Docker builds use `golang:1.25-alpine` image, which is consistent with the Go version used in Planton Cloud's stack-job-runner service. This ensures compatibility across all infrastructure components.
 
 ### Initial Setup
 
