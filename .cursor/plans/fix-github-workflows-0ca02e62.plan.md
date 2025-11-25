@@ -100,3 +100,10 @@ Your workflows are well-configured:
 - No hardcoded credentials
 - Appropriate permission scopes
 - Multi-platform builds with checksums
+
+### To-dos
+
+- [ ] Create CODEOWNERS and SECURITY.md files
+- [ ] Rename master branch to main
+- [ ] Create and push v1.0.0 tag
+- [ ] Verify CI and release workflows trigger successfully

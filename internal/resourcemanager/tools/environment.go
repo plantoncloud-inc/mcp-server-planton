@@ -120,4 +120,3 @@ func HandleListEnvironmentsForOrg(
 
 	return mcp.NewToolResultText(string(resultJSON)), nil
 }
-

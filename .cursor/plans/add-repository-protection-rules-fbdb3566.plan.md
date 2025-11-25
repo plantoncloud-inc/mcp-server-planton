@@ -76,47 +76,47 @@ Branch name pattern: main
 **File to create:**
 
 - `.github/pull_request_template.md` - Standard PR checklist with:
-        - Description
-        - Type of change
-        - Testing checklist
-        - Documentation updates
-        - Breaking changes notice
+                - Description
+                - Type of change
+                - Testing checklist
+                - Documentation updates
+                - Breaking changes notice
 
 ### 4. Add Dependabot Configuration
 
 **File to create:**
 
 - `.github/dependabot.yml` - Configure automated dependency updates for:
-        - Go modules
-        - GitHub Actions
-        - Docker base images
+                - Go modules
+                - GitHub Actions
+                - Docker base images
 
 ### 5. Add CodeQL Security Scanning
 
 **File to create:**
 
 - `.github/workflows/codeql.yml` - Security scanning workflow for:
-        - Go code analysis
-        - Dependency vulnerability scanning
-        - Runs on push/PR and scheduled weekly
+                - Go code analysis
+                - Dependency vulnerability scanning
+                - Runs on push/PR and scheduled weekly
 
 ### 6. Add Stale Bot Configuration
 
 **File to create:**
 
 - `.github/workflows/stale.yml` - Auto-label and close stale issues/PRs:
-        - Mark stale after 60 days
-        - Close after 7 days of no activity
+                - Mark stale after 60 days
+                - Close after 7 days of no activity
 
 ### 7. Add Pre-commit Hooks Configuration (Optional)
 
 **File to create:**
 
 - `.pre-commit-config.yaml` - Local development hooks for:
-        - go fmt
-        - go vet
-        - golangci-lint
-        - conventional commit message validation
+                - go fmt
+                - go vet
+                - golangci-lint
+                - conventional commit message validation
 
 ### 8. Update Documentation
 
