@@ -4,7 +4,7 @@ This guide covers different ways to install and run the Planton Cloud MCP Server
 
 ## Prerequisites
 
-- Access to Planton Cloud (account and JWT token)
+- Access to Planton Cloud (account and API key)
 - For binary installation: No additional dependencies
 - For Docker installation: Docker installed
 - For source installation: Go 1.22 or higher
@@ -70,7 +70,7 @@ Run the container:
 
 ```bash
 docker run -i --rm \
-  -e USER_JWT_TOKEN="your-jwt-token" \
+  -e PLANTON_API_KEY="your-api-key" \
   -e PLANTON_APIS_GRPC_ENDPOINT="apis.planton.cloud:443" \
   ghcr.io/plantoncloud-inc/mcp-server-planton:latest
 ```
@@ -103,15 +103,18 @@ sudo cp bin/mcp-server-planton /usr/local/bin/
 
 ## Configuration
 
-### 1. Obtain JWT Token
+### 1. Obtain API Key
 
-Get your Planton Cloud JWT token:
+Get your Planton Cloud API key:
 
-**Option A: From Web Console**
+**Option A: From Web Console (Recommended)**
 1. Log in to Planton Cloud web console
-2. Open browser developer tools (F12)
-3. Navigate to Application → Local Storage
-4. Find and copy the authentication token
+2. Click on your profile icon in the top-right corner
+3. Select **API Keys** from the menu
+4. Click **Create Key** to generate a new API key
+5. Copy the generated key
+
+**Note:** Existing API keys may not be visible in the console for security reasons, so it's recommended to create a new key.
 
 **Option B: From CLI**
 ```bash
@@ -124,14 +127,14 @@ planton auth token
 Create environment variables for configuration:
 
 ```bash
-export USER_JWT_TOKEN="your-jwt-token-here"
+export PLANTON_API_KEY="your-api-key-here"
 export PLANTON_APIS_GRPC_ENDPOINT="apis.planton.cloud:443"
 ```
 
 For local development against a local Planton Cloud instance:
 
 ```bash
-export USER_JWT_TOKEN="your-jwt-token-here"
+export PLANTON_API_KEY="your-api-key-here"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 ```
 
@@ -159,7 +162,7 @@ Add to your `langgraph.json`:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "${USER_JWT_TOKEN}",
+        "PLANTON_API_KEY": "${PLANTON_API_KEY}",
         "PLANTON_APIS_GRPC_ENDPOINT": "apis.planton.cloud:443"
       }
     }
@@ -175,7 +178,7 @@ Add to your `langgraph.json`:
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-e", "USER_JWT_TOKEN=${USER_JWT_TOKEN}",
+        "-e", "PLANTON_API_KEY=${PLANTON_API_KEY}",
         "-e", "PLANTON_APIS_GRPC_ENDPOINT=${PLANTON_APIS_GRPC_ENDPOINT}",
         "ghcr.io/plantoncloud-inc/mcp-server-planton:latest"
       ]
@@ -198,7 +201,7 @@ Add to Claude Desktop MCP configuration:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "your-jwt-token",
+        "PLANTON_API_KEY": "your-api-key",
         "PLANTON_APIS_GRPC_ENDPOINT": "apis.planton.cloud:443"
       }
     }
@@ -214,7 +217,7 @@ Add to Claude Desktop MCP configuration:
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-e", "USER_JWT_TOKEN=your-jwt-token",
+        "-e", "PLANTON_API_KEY=your-api-key",
         "-e", "PLANTON_APIS_GRPC_ENDPOINT=apis.planton.cloud:443",
         "ghcr.io/plantoncloud-inc/mcp-server-planton:latest"
       ]
@@ -234,7 +237,7 @@ Add to your Cursor MCP settings:
       "planton-cloud": {
         "command": "mcp-server-planton",
         "env": {
-          "USER_JWT_TOKEN": "your-jwt-token",
+          "PLANTON_API_KEY": "your-api-key",
           "PLANTON_APIS_GRPC_ENDPOINT": "apis.planton.cloud:443"
         }
       }
@@ -273,17 +276,17 @@ If the server can't connect to Planton Cloud APIs:
 ping apis.planton.cloud
 ```
 
-3. Verify JWT token is valid:
+3. Verify API key is set:
 ```bash
-# Check token expiration
-echo $USER_JWT_TOKEN | cut -d'.' -f2 | base64 -d
+# Check that API key is set
+echo $PLANTON_API_KEY
 ```
 
 ### Permission Errors
 
 If you get permission denied errors:
 
-1. Verify your JWT token is current (not expired)
+1. Verify your API key is valid (not expired or revoked)
 2. Check that your user has permissions in the organization
 3. Contact your Planton Cloud administrator
 

@@ -13,9 +13,9 @@ import (
 
 // EnvironmentClient is a gRPC client for querying Planton Cloud Environment resources.
 //
-// This client uses the user's JWT token (not machine account) to make
+// This client uses the user's API key (not machine account) to make
 // authenticated gRPC calls to Planton Cloud APIs. The APIs validate the
-// JWT and enforce Fine-Grained Authorization (FGA) checks based on the
+// API key and enforce Fine-Grained Authorization (FGA) checks based on the
 // user's actual permissions.
 type EnvironmentClient struct {
 	conn   *grpc.ClientConn
@@ -26,14 +26,14 @@ type EnvironmentClient struct {
 //
 // Args:
 //   - grpcEndpoint: Planton Cloud APIs endpoint (e.g., "localhost:8080")
-//   - userToken: User's JWT token from environment variable
+//   - apiKey: User's API key from environment variable (can be JWT token or API key)
 //
 // Returns an EnvironmentClient and any error encountered during connection setup.
-func NewEnvironmentClient(grpcEndpoint, userToken string) (*EnvironmentClient, error) {
+func NewEnvironmentClient(grpcEndpoint, apiKey string) (*EnvironmentClient, error) {
 	// Create gRPC dial options with auth interceptor
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(UserTokenAuthInterceptor(userToken)),
+		grpc.WithUnaryInterceptor(UserTokenAuthInterceptor(apiKey)),
 	}
 
 	// Establish connection
@@ -56,7 +56,7 @@ func NewEnvironmentClient(grpcEndpoint, userToken string) (*EnvironmentClient, e
 // FindByOrg queries all environments for an organization.
 //
 // This method makes an authenticated gRPC call to Planton Cloud APIs
-// using the user's JWT token. The API validates the JWT and checks
+// using the user's API key. The API validates the key and checks
 // FGA permissions to ensure the user has access to view environments
 // in the specified organization.
 //
@@ -73,7 +73,7 @@ func (c *EnvironmentClient) FindByOrg(ctx context.Context, orgID string) ([]*env
 		Value: orgID,
 	}
 
-	// Make gRPC call (interceptor attaches JWT automatically)
+	// Make gRPC call (interceptor attaches API key automatically)
 	resp, err := c.client.FindByOrg(ctx, req)
 	if err != nil {
 		log.Printf("gRPC error querying environments for org %s: %v", orgID, err)
@@ -95,4 +95,3 @@ func (c *EnvironmentClient) Close() error {
 	}
 	return nil
 }
-

@@ -4,11 +4,11 @@ MCP (Model Context Protocol) server for Planton Cloud that enables AI agents to 
 
 ## Overview
 
-The Planton Cloud MCP Server provides tools for LangGraph agents, Claude Desktop, and other MCP clients to interact with Planton Cloud resources. Unlike typical MCP servers that use API keys or machine accounts, this server uses **user JWT tokens**, ensuring that all resource queries respect Fine-Grained Authorization (FGA) based on the user's actual permissions.
+The Planton Cloud MCP Server provides tools for LangGraph agents, Claude Desktop, and other MCP clients to interact with Planton Cloud resources. Unlike typical MCP servers that use machine accounts, this server uses **user API keys**, ensuring that all resource queries respect Fine-Grained Authorization (FGA) based on the user's actual permissions.
 
 ### Key Features
 
-- **User-scoped permissions** - Queries respect the user's actual permissions via JWT
+- **User-scoped permissions** - Queries respect the user's actual permissions via API key
 - **Environment queries** - List and filter environments by organization
 - **Extensible** - More resource types coming soon (organizations, projects, cloud resources)
 - **MCP standard** - Works with any MCP client (LangGraph, Claude Desktop, Cursor, etc.)
@@ -22,7 +22,7 @@ Pull and run from GitHub Container Registry:
 
 ```bash
 docker run -i --rm \
-  -e USER_JWT_TOKEN="your-jwt-token" \
+  -e PLANTON_API_KEY="your-api-key" \
   -e PLANTON_APIS_GRPC_ENDPOINT="apis.planton.cloud:443" \
   ghcr.io/plantoncloud-inc/mcp-server-planton:latest
 ```
@@ -68,7 +68,7 @@ make build
 Set required environment variables:
 
 ```bash
-export USER_JWT_TOKEN="your-jwt-token"
+export PLANTON_API_KEY="your-api-key"
 export PLANTON_APIS_GRPC_ENDPOINT="apis.planton.cloud:443"
 ```
 
@@ -88,7 +88,7 @@ Add to your `langgraph.json`:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "${USER_JWT_TOKEN}",
+        "PLANTON_API_KEY": "${PLANTON_API_KEY}",
         "PLANTON_APIS_GRPC_ENDPOINT": "${PLANTON_APIS_GRPC_ENDPOINT}"
       }
     }
@@ -105,7 +105,7 @@ Or using Docker:
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-e", "USER_JWT_TOKEN=${USER_JWT_TOKEN}",
+        "-e", "PLANTON_API_KEY=${PLANTON_API_KEY}",
         "-e", "PLANTON_APIS_GRPC_ENDPOINT=${PLANTON_APIS_GRPC_ENDPOINT}",
         "ghcr.io/plantoncloud-inc/mcp-server-planton:latest"
       ]
@@ -124,7 +124,7 @@ Add to your Claude Desktop MCP settings:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "your-jwt-token",
+        "PLANTON_API_KEY": "your-api-key",
         "PLANTON_APIS_GRPC_ENDPOINT": "apis.planton.cloud:443"
       }
     }
@@ -141,7 +141,7 @@ Or using Docker:
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-e", "USER_JWT_TOKEN=your-jwt-token",
+        "-e", "PLANTON_API_KEY=your-api-key",
         "-e", "PLANTON_APIS_GRPC_ENDPOINT=apis.planton.cloud:443",
         "ghcr.io/plantoncloud-inc/mcp-server-planton:latest"
       ]
@@ -156,18 +156,22 @@ Or using Docker:
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `USER_JWT_TOKEN` | Yes | - | User's JWT token for authentication |
+| `PLANTON_API_KEY` | Yes | - | User's API key for authentication (can be JWT token or API key) |
 | `PLANTON_APIS_GRPC_ENDPOINT` | No | `localhost:8080` | Planton Cloud APIs gRPC endpoint |
 
-### Getting a JWT Token
+### Getting an API Key
 
-To obtain a JWT token:
+**Option A: From Web Console (Recommended)**
 
 1. Log in to Planton Cloud web console
-2. Open browser developer tools (F12)
-3. Go to Application/Storage → Local Storage
-4. Find the authentication token
-5. Copy the JWT value
+2. Click on your profile icon in the top-right corner
+3. Select **API Keys** from the menu
+4. Click **Create Key** to generate a new API key
+5. Copy the generated key
+
+**Note:** Existing API keys may not be visible in the console for security reasons, so it's recommended to create a new key.
+
+**Option B: From CLI**
 
 For programmatic access, use the Planton Cloud CLI:
 
@@ -211,29 +215,29 @@ List all environments available in an organization that the user has permission 
 
 The tool returns user-friendly error messages for common issues:
 
-- `UNAUTHENTICATED` - JWT token invalid or expired
+- `UNAUTHENTICATED` - API key invalid or expired
 - `PERMISSION_DENIED` - User lacks permission to view environments in the organization
 - `NOT_FOUND` - Organization doesn't exist
 - `UNAVAILABLE` - Planton Cloud APIs are temporarily unavailable
 
 ## Security Architecture
 
-### User JWT Propagation
+### User API Key Propagation
 
 This MCP server follows a unique security pattern:
 
 ```
-User → LangGraph/MCP Client → MCP Server (with JWT) → Planton Cloud APIs
+User → LangGraph/MCP Client → MCP Server (with API key) → Planton Cloud APIs
 ```
 
 **Key security properties:**
 
-1. **No JWT persistence** - JWT is only held in memory during execution
-2. **User permissions enforced** - APIs validate JWT and check FGA on every call
+1. **No API key persistence** - API key is only held in memory during execution
+2. **User permissions enforced** - APIs validate the key and check FGA on every call
 3. **Short-lived process** - MCP server exits when agent execution completes
 4. **Audit trail** - All API calls are logged with user identity
 
-This is different from machine account patterns where a service account has broad permissions. With user JWT propagation, the MCP server can only access what the user can access.
+This is different from machine account patterns where a service account has broad permissions. With user API key propagation, the MCP server can only access what the user can access.
 
 ## Development
 
@@ -259,7 +263,7 @@ make build
 ### Running Locally
 
 ```bash
-export USER_JWT_TOKEN="your-jwt-token"
+export PLANTON_API_KEY="your-api-key"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 ./bin/mcp-server-planton
 ```

@@ -6,19 +6,32 @@ Comprehensive configuration options for the Planton Cloud MCP Server.
 
 ### Required Variables
 
-#### USER_JWT_TOKEN
+#### PLANTON_API_KEY
 
-User's JWT token for authentication with Planton Cloud APIs.
+User's API key for authentication with Planton Cloud APIs. This can be either a JWT token or an API key obtained from the Planton Cloud console.
 
 ```bash
-export USER_JWT_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+export PLANTON_API_KEY="your-api-key-or-jwt-token"
 ```
 
 **How to obtain:**
-- Web Console: Developer Tools → Application → Local Storage
-- CLI: `planton auth token`
 
-**Important:** This token represents the user's identity and permissions. Keep it secure and never commit it to version control.
+**Option A: From Web Console (Recommended)**
+1. Log in to Planton Cloud web console
+2. Click on your profile icon in the top-right corner
+3. Select **API Keys** from the menu
+4. Click **Create Key** to generate a new API key
+5. Copy the generated key
+
+**Note:** Existing API keys may not be visible in the console for security reasons, so it's recommended to create a new key.
+
+**Option B: From CLI**
+```bash
+planton auth login
+planton auth token
+```
+
+**Important:** This key represents the user's identity and permissions. Keep it secure and never commit it to version control.
 
 ### Optional Variables
 
@@ -45,7 +58,7 @@ The MCP server loads configuration from environment variables on startup using t
 
 ```go
 type Config struct {
-    UserJWTToken            string
+    PlantonAPIKey           string
     PlantonAPIsGRPCEndpoint string
 }
 ```
@@ -54,10 +67,10 @@ type Config struct {
 
 ```go
 func LoadFromEnv() (*Config, error) {
-    userJWT := os.Getenv("USER_JWT_TOKEN")
-    if userJWT == "" {
+    apiKey := os.Getenv("PLANTON_API_KEY")
+    if apiKey == "" {
         return nil, fmt.Errorf(
-            "USER_JWT_TOKEN environment variable required. " +
+            "PLANTON_API_KEY environment variable required. " +
             "This should be set by LangGraph when spawning MCP server",
         )
     }
@@ -68,7 +81,7 @@ func LoadFromEnv() (*Config, error) {
     }
     
     return &Config{
-        UserJWTToken:            userJWT,
+        PlantonAPIKey:           apiKey,
         PlantonAPIsGRPCEndpoint: endpoint,
     }, nil
 }
@@ -82,7 +95,7 @@ Create a `.env` file in your project root for local development:
 
 ```env
 # Required
-USER_JWT_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+PLANTON_API_KEY=your-api-key-or-jwt-token
 
 # Optional (defaults to localhost:8080)
 PLANTON_APIS_GRPC_ENDPOINT=apis.planton.cloud:443
@@ -95,7 +108,7 @@ PLANTON_APIS_GRPC_ENDPOINT=apis.planton.cloud:443
 export $(cat .env | xargs)
 
 # Or use direnv
-echo 'export USER_JWT_TOKEN="..."' > .envrc
+echo 'export PLANTON_API_KEY="..."' > .envrc
 direnv allow
 ```
 
@@ -119,7 +132,7 @@ In `langgraph.json`:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "${USER_JWT_TOKEN}",
+        "PLANTON_API_KEY": "${PLANTON_API_KEY}",
         "PLANTON_APIS_GRPC_ENDPOINT": "${PLANTON_APIS_GRPC_ENDPOINT}"
       }
     }
@@ -139,7 +152,7 @@ In `claude_desktop_config.json`:
     "planton-cloud": {
       "command": "mcp-server-planton",
       "env": {
-        "USER_JWT_TOKEN": "actual-token-here",
+        "PLANTON_API_KEY": "your-api-key",
         "PLANTON_APIS_GRPC_ENDPOINT": "apis.planton.cloud:443"
       }
     }
@@ -257,26 +270,26 @@ client := environmentv1.NewEnvironmentQueryControllerClient(conn)
 
 ## Security Best Practices
 
-### JWT Token Management
+### API Key Management
 
-1. **Never commit tokens** - Use environment variables or secret managers
-2. **Rotate regularly** - JWT tokens should have expiration times
-3. **Scope appropriately** - Use tokens with minimum required permissions
-4. **Monitor usage** - Track token usage for audit purposes
+1. **Never commit keys** - Use environment variables or secret managers
+2. **Rotate regularly** - API keys should be rotated periodically
+3. **Scope appropriately** - Use keys with minimum required permissions
+4. **Monitor usage** - Track key usage for audit purposes
 
-### Environment-Specific Tokens
+### Environment-Specific API Keys
 
-Use different tokens for different environments:
+Use different keys for different environments:
 
 ```bash
 # Development
-export USER_JWT_TOKEN_DEV="dev-token..."
+export PLANTON_API_KEY_DEV="dev-key..."
 
 # Staging
-export USER_JWT_TOKEN_STAGING="staging-token..."
+export PLANTON_API_KEY_STAGING="staging-key..."
 
 # Production
-export USER_JWT_TOKEN_PROD="prod-token..."
+export PLANTON_API_KEY_PROD="prod-key..."
 ```
 
 ### Secret Management
@@ -285,15 +298,15 @@ For production deployments, use secret managers:
 
 **AWS Secrets Manager:**
 ```bash
-export USER_JWT_TOKEN=$(aws secretsmanager get-secret-value \
-  --secret-id planton/jwt-token \
+export PLANTON_API_KEY=$(aws secretsmanager get-secret-value \
+  --secret-id planton/api-key \
   --query SecretString \
   --output text)
 ```
 
 **HashiCorp Vault:**
 ```bash
-export USER_JWT_TOKEN=$(vault kv get -field=token secret/planton/jwt)
+export PLANTON_API_KEY=$(vault kv get -field=key secret/planton/api)
 ```
 
 **Kubernetes Secrets:**
@@ -304,7 +317,7 @@ metadata:
   name: planton-mcp-config
 type: Opaque
 stringData:
-  USER_JWT_TOKEN: "your-jwt-token"
+  PLANTON_API_KEY: "your-api-key"
   PLANTON_APIS_GRPC_ENDPOINT: "apis.planton.cloud:443"
 ```
 
@@ -345,34 +358,34 @@ func main() {
     
     fmt.Println("Configuration valid!")
     fmt.Printf("Endpoint: %s\n", cfg.PlantonAPIsGRPCEndpoint)
-    fmt.Printf("Token present: %t\n", cfg.UserJWTToken != "")
+    fmt.Printf("API key present: %t\n", cfg.PlantonAPIKey != "")
 }
 ```
 
 ## Troubleshooting
 
-### Missing Token Error
+### Missing API Key Error
 
 ```
-Configuration error: USER_JWT_TOKEN environment variable required
+Configuration error: PLANTON_API_KEY environment variable required
 ```
 
-**Solution:** Set the `USER_JWT_TOKEN` environment variable.
+**Solution:** Set the `PLANTON_API_KEY` environment variable.
 
 ```bash
-export USER_JWT_TOKEN="your-token-here"
+export PLANTON_API_KEY="your-api-key-here"
 ```
 
-### Invalid Token Error
+### Invalid API Key Error
 
 ```
 rpc error: code = Unauthenticated desc = Invalid authentication credentials
 ```
 
 **Solutions:**
-1. Verify token is not expired
-2. Ensure token is complete (no truncation)
-3. Re-authenticate and get a new token
+1. Verify API key is not expired
+2. Ensure API key is complete (no truncation)
+3. Generate a new API key from the Planton Cloud console (Profile → API Keys → Create Key)
 
 ### Connection Refused
 
@@ -402,7 +415,7 @@ rpc error: code = DeadlineExceeded desc = context deadline exceeded
 ### Local Development
 
 ```bash
-export USER_JWT_TOKEN="dev-token-from-local-planton"
+export PLANTON_API_KEY="dev-key-from-local-planton"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 mcp-server-planton
 ```
@@ -410,7 +423,7 @@ mcp-server-planton
 ### Production
 
 ```bash
-export USER_JWT_TOKEN="$(vault kv get -field=token secret/planton/jwt)"
+export PLANTON_API_KEY="$(vault kv get -field=key secret/planton/api)"
 export PLANTON_APIS_GRPC_ENDPOINT="apis.planton.cloud:443"
 mcp-server-planton
 ```
@@ -423,7 +436,7 @@ services:
   mcp-server:
     image: ghcr.io/plantoncloud-inc/mcp-server-planton:latest
     environment:
-      USER_JWT_TOKEN: ${USER_JWT_TOKEN}
+      PLANTON_API_KEY: ${PLANTON_API_KEY}
       PLANTON_APIS_GRPC_ENDPOINT: apis.planton.cloud:443
     stdin_open: true
     tty: true
