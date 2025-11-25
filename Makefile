@@ -83,7 +83,7 @@ endif
 		echo "Error: version must follow semantic versioning (e.g., v1.0.0, v2.1.3)"; \
 		exit 1; \
 	fi
-	@git version -a $(version) -m "Release $(version)"
+	@git tag -a $(version) -m "Release $(version)"
 	@git push origin $(version)
 	@echo "Release version $(version) created and pushed"
 	@echo "GitHub Actions will now build and publish the release"
