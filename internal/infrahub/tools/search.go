@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
-	"github.com/plantoncloud-inc/mcp-server-planton/internal/infrahub"
 	apiresourcekind "buf.build/gen/go/blintora/apis/protocolbuffers/go/ai/planton/commons/apiresource/apiresourcekind"
 	cloudresourcesearch "buf.build/gen/go/blintora/apis/protocolbuffers/go/ai/planton/search/v1/infrahub/cloudresource"
 	cloudresourcekind "buf.build/gen/go/project-planton/apis/protocolbuffers/go/org/project_planton/shared/cloudresourcekind"
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
+	"github.com/plantoncloud-inc/mcp-server-planton/internal/infrahub"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -221,4 +221,3 @@ func getKindName(kind int32) string {
 	}
 	return fmt.Sprintf("Unknown(%d)", kind)
 }
-
