@@ -30,7 +30,7 @@ Adopted the same endpoint selection pattern used in Planton Cloud CLI (`planton-
    - Default to `live` environment
 
 2. **Environment-to-endpoint mapping**:
-   - `live` → `api.live.planton.cloud:443`
+   - `live` → `api.live.planton.ai:443`
    - `test` → `api.test.planton.cloud:443`
    - `local` → `localhost:8080`
 
@@ -140,4 +140,5 @@ export PLANTON_CLOUD_ENVIRONMENT="live"
 ## Related Issues
 
 This change addresses the user's concern about endpoint configuration and brings MCP server configuration in line with CLI patterns, making it easier for users already familiar with the CLI to adopt the MCP server.
+
 

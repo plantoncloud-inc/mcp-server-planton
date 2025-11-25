@@ -26,7 +26,7 @@ const (
 	// Endpoints for each environment
 	LocalEndpoint = "localhost:8080"
 	TestEndpoint  = "api.test.planton.cloud:443"
-	LiveEndpoint  = "api.live.planton.cloud:443"
+	LiveEndpoint  = "api.live.planton.ai:443"
 )
 
 // Config holds the MCP server configuration loaded from environment variables.

@@ -40,7 +40,7 @@ export PLANTON_CLOUD_ENVIRONMENT="live"
 **Default:** `live`
 
 **Valid values:**
-- `live`: Production environment (`api.live.planton.cloud:443`)
+- `live`: Production environment (`api.live.planton.ai:443`)
 - `test`: Test environment (`api.test.planton.cloud:443`)
 - `local`: Local development (`localhost:8080`)
 

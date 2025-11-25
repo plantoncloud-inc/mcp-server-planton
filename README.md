@@ -175,7 +175,7 @@ Or using Docker:
 | `PLANTON_APIS_GRPC_ENDPOINT` | No | (based on env) | Override gRPC endpoint (takes precedence over environment) |
 
 **Environment-based Endpoints:**
-- `live` (default): `api.live.planton.cloud:443`
+- `live` (default): `api.live.planton.ai:443`
 - `test`: `api.test.planton.cloud:443`
 - `local`: `localhost:8080`
 
