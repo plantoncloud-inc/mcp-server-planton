@@ -9,16 +9,17 @@ import (
 )
 
 // UserTokenAuthInterceptor creates a gRPC unary client interceptor that attaches
-// the user's JWT token to all outgoing requests.
+// the user's API key to all outgoing requests.
 //
-// This interceptor passes through the user's JWT token (from environment)
+// This interceptor passes through the user's API key (from environment)
 // to Planton Cloud APIs, enabling Fine-Grained Authorization (FGA) checks
-// using the user's actual permissions.
+// using the user's actual permissions. The API key can be either a JWT token
+// or an API key obtained from the Planton Cloud console.
 //
 // Key Difference from agent-fleet-worker's AuthClientInterceptor:
 //   - agent-fleet-worker: Fetches machine account token from Auth0
-//   - MCP server: Uses user JWT directly (no token fetching)
-func UserTokenAuthInterceptor(userToken string) grpc.UnaryClientInterceptor {
+//   - MCP server: Uses user's API key directly (no token fetching)
+func UserTokenAuthInterceptor(apiKey string) grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
@@ -27,14 +28,13 @@ func UserTokenAuthInterceptor(userToken string) grpc.UnaryClientInterceptor {
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,
 	) error {
-		// Add user JWT to request metadata as Authorization header
+		// Add user's API key to request metadata as Authorization header
 		ctx = metadata.AppendToOutgoingContext(
 			ctx,
-			"authorization", fmt.Sprintf("Bearer %s", userToken),
+			"authorization", fmt.Sprintf("Bearer %s", apiKey),
 		)
 
 		// Invoke the actual RPC
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
-

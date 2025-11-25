@@ -36,7 +36,7 @@ make build
 4. Set up environment variables:
 
 ```bash
-export USER_JWT_TOKEN="your-jwt-token"
+export PLANTON_API_KEY="your-api-key"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 ```
 
@@ -46,7 +46,7 @@ export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 
 ```bash
 # Set environment variables
-export USER_JWT_TOKEN="your-jwt-token"
+export PLANTON_API_KEY="your-api-key"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 
 # Run server from binary
@@ -138,16 +138,16 @@ import (
 
 func TestLoadFromEnv(t *testing.T) {
     // Set up test environment
-    os.Setenv("USER_JWT_TOKEN", "test-token")
-    defer os.Unsetenv("USER_JWT_TOKEN")
+    os.Setenv("PLANTON_API_KEY", "test-token")
+    defer os.Unsetenv("PLANTON_API_KEY")
     
     cfg, err := config.LoadFromEnv()
     if err != nil {
         t.Fatalf("Expected no error, got: %v", err)
     }
     
-    if cfg.UserJWTToken != "test-token" {
-        t.Errorf("Expected token 'test-token', got: %s", cfg.UserJWTToken)
+    if cfg.PlantonAPIKey != "test-token" {
+        t.Errorf("Expected token 'test-token', got: %s", cfg.PlantonAPIKey)
     }
 }
 ```
@@ -212,10 +212,10 @@ type OrganizationClient struct {
     client orgv1.OrganizationQueryControllerClient
 }
 
-func NewOrganizationClient(grpcEndpoint, userToken string) (*OrganizationClient, error) {
+func NewOrganizationClient(grpcEndpoint, apiKey string) (*OrganizationClient, error) {
     opts := []grpc.DialOption{
         grpc.WithTransportCredentials(insecure.NewCredentials()),
-        grpc.WithUnaryInterceptor(UserTokenAuthInterceptor(userToken)),
+        grpc.WithUnaryInterceptor(UserTokenAuthInterceptor(apiKey)),
     }
     
     conn, err := grpc.NewClient(grpcEndpoint, opts...)
@@ -330,7 +330,7 @@ func (s *Server) registerOrganizationTools() {
 ```go
 // FetchResourceByID retrieves a cloud resource by its unique identifier.
 //
-// The function respects the user's permissions via the JWT token in the context.
+// The function respects the user's permissions via the API key in the context.
 // Returns an error if the resource doesn't exist or the user lacks permissions.
 func FetchResourceByID(ctx context.Context, resourceID string, client ResourceClient) (*Resource, error) {
     if resourceID == "" {

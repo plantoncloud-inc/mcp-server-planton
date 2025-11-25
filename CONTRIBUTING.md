@@ -34,7 +34,7 @@ make build
 
 Set required environment variables:
 ```bash
-export USER_JWT_TOKEN="your-jwt-token"
+export PLANTON_API_KEY="your-api-key"
 export PLANTON_APIS_GRPC_ENDPOINT="localhost:8080"
 ```
 
@@ -106,7 +106,7 @@ type OrganizationClient struct {
     client orgv1.OrganizationQueryControllerClient
 }
 
-func NewOrganizationClient(grpcEndpoint, userToken string) (*OrganizationClient, error) {
+func NewOrganizationClient(grpcEndpoint, apiKey string) (*OrganizationClient, error) {
     // Initialize gRPC client with auth interceptor
     // ...
 }

@@ -52,7 +52,7 @@ func CreateEnvironmentTool() mcp.Tool {
 //
 // This function:
 //  1. Validates the org_id argument
-//  2. Creates EnvironmentClient with user JWT
+//  2. Creates EnvironmentClient with user's API key
 //  3. Queries Planton Cloud APIs for environments
 //  4. Converts protobuf responses to JSON-serializable structs
 //  5. Returns formatted response or error message
@@ -74,10 +74,10 @@ func HandleListEnvironmentsForOrg(
 
 	log.Printf("Tool invoked: list_environments_for_org, org_id=%s", orgID)
 
-	// Create gRPC client with user JWT
+	// Create gRPC client with user's API key
 	client, err := grpcclient.NewEnvironmentClient(
 		cfg.PlantonAPIsGRPCEndpoint,
-		cfg.UserJWTToken,
+		cfg.PlantonAPIKey,
 	)
 	if err != nil {
 		errResp := ErrorResponse{
@@ -182,4 +182,3 @@ func handleGRPCError(err error, orgID string) *mcp.CallToolResult {
 	errJSON, _ := json.MarshalIndent(errResp, "", "  ")
 	return mcp.NewToolResultText(string(errJSON))
 }
-

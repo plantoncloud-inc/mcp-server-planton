@@ -44,7 +44,7 @@ docker-build:
 docker-run:
 	@echo "Running Docker container..."
 	@docker run -i --rm \
-		-e USER_JWT_TOKEN=$(USER_JWT_TOKEN) \
+		-e PLANTON_API_KEY=$(PLANTON_API_KEY) \
 		-e PLANTON_APIS_GRPC_ENDPOINT=$(PLANTON_APIS_GRPC_ENDPOINT) \
 		$(DOCKER_IMAGE)
 

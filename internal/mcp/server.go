@@ -34,7 +34,7 @@ func NewServer(cfg *config.Config) *Server {
 
 	log.Println("MCP server initialized with stdio transport")
 	log.Printf("Planton APIs endpoint: %s", cfg.PlantonAPIsGRPCEndpoint)
-	log.Println("User JWT token loaded from environment")
+	log.Println("User API key loaded from environment")
 
 	return s
 }
