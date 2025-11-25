@@ -142,3 +142,4 @@ $ go build -v ./cmd/mcp-server-planton
 - Buf Module: https://buf.build/blintora/apis
 - Buf Go Module Proxy: https://buf.build/docs/bsr/remote-plugins/go
 
+

@@ -107,3 +107,4 @@ mcp-server-planton = { git = "https://github.com/plantoncloud-inc/mcp-server-pla
 - [x] PyPI packaging metadata complete
 - [x] README covers installation, configuration, usage
 
+
