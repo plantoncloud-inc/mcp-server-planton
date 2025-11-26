@@ -12,6 +12,7 @@ import (
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/common/errors"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/clients"
+	crinternal "github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/cloudresource/internal"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -106,14 +107,14 @@ func HandleCreateCloudResource(
 	}
 
 	// 2. Normalize cloud_resource_kind
-	kind, err := NormalizeCloudResourceKind(kindStr)
+	kind, err := crinternal.NormalizeCloudResourceKind(kindStr)
 	if err != nil {
 		// Return error with suggestions
 		errResp := map[string]interface{}{
 			"error":                     "INVALID_CLOUD_RESOURCE_KIND",
 			"message":                   err.Error(),
 			"input":                     kindStr,
-			"popular_kinds_by_category": GetPopularKindsByCategory(),
+			"popular_kinds_by_category": crinternal.GetPopularKindsByCategory(),
 			"hint":                      "Call 'get_cloud_resource_schema' with a valid kind to see required fields",
 		}
 		errJSON, _ := json.MarshalIndent(errResp, "", "  ")
@@ -174,7 +175,7 @@ func HandleCreateCloudResource(
 	}
 
 	// 7. Wrap spec data into CloudResource
-	cloudResource, err := WrapCloudResource(kind, specData, metadata)
+	cloudResource, err := crinternal.WrapCloudResource(kind, specData, metadata)
 	if err != nil {
 		// Wrapping failed - return error with schema guidance
 		errResp := map[string]interface{}{
@@ -204,7 +205,7 @@ func HandleCreateCloudResource(
 	}
 
 	// 10. Unwrap the created resource
-	unwrappedResource, err := UnwrapCloudResource(createdResource)
+	unwrappedResource, err := crinternal.UnwrapCloudResource(createdResource)
 	if err != nil {
 		return errorResponse("INTERNAL_ERROR", fmt.Sprintf("Failed to unwrap created resource: %v", err)), nil
 	}

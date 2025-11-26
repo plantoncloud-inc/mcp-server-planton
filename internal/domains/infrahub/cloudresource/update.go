@@ -10,6 +10,7 @@ import (
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/common/errors"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/clients"
+	crinternal "github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/cloudresource/internal"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -123,7 +124,7 @@ func HandleUpdateCloudResource(
 	log.Printf("Updating cloud resource: kind=%s, name=%s", kind.String(), metadata.GetName())
 
 	// 7. Wrap the new spec data into CloudResource
-	updatedResource, err := WrapCloudResource(kind, specData, metadata)
+	updatedResource, err := crinternal.WrapCloudResource(kind, specData, metadata)
 	if err != nil {
 		errResp := map[string]interface{}{
 			"error":   "INVALID_SPEC_DATA",
@@ -155,7 +156,7 @@ func HandleUpdateCloudResource(
 	}
 
 	// 9. Unwrap the updated resource
-	unwrappedResource, err := UnwrapCloudResource(result)
+	unwrappedResource, err := crinternal.UnwrapCloudResource(result)
 	if err != nil {
 		errResp := errors.ErrorResponse{
 			Error:   "INTERNAL_ERROR",
@@ -186,3 +187,4 @@ func HandleUpdateCloudResource(
 
 	return mcp.NewToolResultText(string(resultJSON)), nil
 }
+

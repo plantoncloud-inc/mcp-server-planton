@@ -10,6 +10,7 @@ import (
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/common/errors"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/clients"
+	crinternal "github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/cloudresource/internal"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -105,7 +106,7 @@ func HandleDeleteCloudResource(
 	}
 
 	// 5. Unwrap the deleted resource
-	unwrappedResource, err := UnwrapCloudResource(deletedResource)
+	unwrappedResource, err := crinternal.UnwrapCloudResource(deletedResource)
 	if err != nil {
 		errResp := errors.ErrorResponse{
 			Error:   "INTERNAL_ERROR",
@@ -154,3 +155,4 @@ func HandleDeleteCloudResource(
 
 	return mcp.NewToolResultText(string(responseJSON)), nil
 }
+

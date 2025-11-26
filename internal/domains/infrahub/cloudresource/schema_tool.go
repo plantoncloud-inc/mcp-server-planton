@@ -9,6 +9,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/common/errors"
 	"github.com/plantoncloud-inc/mcp-server-planton/internal/config"
+	crinternal "github.com/plantoncloud-inc/mcp-server-planton/internal/domains/infrahub/cloudresource/internal"
 )
 
 // CreateGetCloudResourceSchemaTool creates the MCP tool definition for getting cloud resource schema.
@@ -70,15 +71,15 @@ func HandleGetCloudResourceSchema(
 	log.Printf("Tool invoked: get_cloud_resource_schema, kind=%s", kindStr)
 
 	// Normalize the kind (handles multiple formats)
-	kind, err := NormalizeCloudResourceKind(kindStr)
+	kind, err := crinternal.NormalizeCloudResourceKind(kindStr)
 	if err != nil {
 		// Kind not found - return error with helpful suggestions
 		errResp := map[string]interface{}{
-			"error":                     "INVALID_CLOUD_RESOURCE_KIND",
-			"message":                   err.Error(),
-			"input":                     kindStr,
-			"popular_kinds_by_category": GetPopularKindsByCategory(),
-			"hint":                      "Enable 'list_cloud_resource_kinds' tool to discover all 150+ available types",
+			"error":   "INVALID_CLOUD_RESOURCE_KIND",
+			"message": err.Error(),
+			"input":   kindStr,
+			"popular_kinds_by_category": crinternal.GetPopularKindsByCategory(),
+			"hint":    "Enable 'list_cloud_resource_kinds' tool to discover all 150+ available types",
 		}
 		errJSON, _ := json.MarshalIndent(errResp, "", "  ")
 		return mcp.NewToolResultText(string(errJSON)), nil
@@ -87,7 +88,7 @@ func HandleGetCloudResourceSchema(
 	log.Printf("Normalized kind: %s -> %s", kindStr, kind.String())
 
 	// Extract schema using protobuf reflection
-	schema, err := ExtractCloudResourceSchema(kind)
+	schema, err := crinternal.ExtractCloudResourceSchema(kind)
 	if err != nil {
 		errResp := errors.ErrorResponse{
 			Error:   "SCHEMA_EXTRACTION_ERROR",
@@ -112,3 +113,4 @@ func HandleGetCloudResourceSchema(
 
 	return mcp.NewToolResultText(string(schemaJSON)), nil
 }
+
