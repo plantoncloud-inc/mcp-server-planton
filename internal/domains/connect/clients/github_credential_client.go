@@ -235,6 +235,33 @@ func (c *GithubQueryClient) FindGithubRepositories(ctx context.Context, credenti
 	return resp, nil
 }
 
+// GetInstallationToken retrieves a short-lived GitHub App installation token for Git operations.
+//
+// Args:
+//   - ctx: Context for the request
+//   - credentialID: GitHub credential ID
+//
+// Returns a GithubInstallationToken with token and expiry or an error.
+func (c *GithubQueryClient) GetInstallationToken(ctx context.Context, credentialID string) (*githubcredentialv1.GithubInstallationToken, error) {
+	log.Printf("Getting installation token for credential: %s", credentialID)
+
+	// Create request
+	req := &apiresource.ApiResourceId{
+		Value: credentialID,
+	}
+
+	// Make gRPC call (interceptor attaches API key automatically)
+	resp, err := c.client.GetInstallationToken(ctx, req)
+	if err != nil {
+		log.Printf("gRPC error getting installation token: %v", err)
+		return nil, err
+	}
+
+	log.Printf("Successfully retrieved installation token for credential: %s", credentialID)
+
+	return resp, nil
+}
+
 // NewGithubQueryClientFromContext creates a new GitHub Query gRPC client
 // using the API key from the request context.
 //

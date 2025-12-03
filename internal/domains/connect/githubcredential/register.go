@@ -15,8 +15,9 @@ func RegisterTools(s *server.MCPServer, cfg *config.Config) {
 	registerGetGithubCredentialForServiceTool(s, cfg)
 	registerGetGithubCredentialByOrgBySlugTool(s, cfg)
 	registerListGithubRepositoriesTool(s, cfg)
+	registerGetGithubInstallationTokenTool(s, cfg)
 
-	log.Println("Registered 3 GitHub credential tools")
+	log.Println("Registered 4 GitHub credential tools")
 }
 
 // registerGetGithubCredentialForServiceTool registers the get_github_credential_for_service tool.
@@ -53,4 +54,16 @@ func registerListGithubRepositoriesTool(s *server.MCPServer, cfg *config.Config)
 		},
 	)
 	log.Println("  - list_github_repositories")
+}
+
+// registerGetGithubInstallationTokenTool registers the get_github_installation_token tool.
+func registerGetGithubInstallationTokenTool(s *server.MCPServer, cfg *config.Config) {
+	s.AddTool(
+		CreateGetGithubInstallationTokenTool(),
+		func(arguments map[string]interface{}) (*mcp.CallToolResult, error) {
+			ctx := auth.GetContextWithAPIKey(context.Background())
+			return HandleGetGithubInstallationToken(ctx, arguments, cfg)
+		},
+	)
+	log.Println("  - get_github_installation_token")
 }
