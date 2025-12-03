@@ -13,9 +13,10 @@ import (
 // RegisterTools registers all pipeline tools with the MCP server.
 func RegisterTools(s *server.MCPServer, cfg *config.Config) {
 	registerGetPipelineByIdTool(s, cfg)
+	registerGetLatestPipelineByServiceIdTool(s, cfg)
 	registerGetPipelineBuildLogsTool(s, cfg)
 
-	log.Println("Registered 2 pipeline tools")
+	log.Println("Registered 3 pipeline tools")
 }
 
 // registerGetPipelineByIdTool registers the get_pipeline_by_id tool.
@@ -28,6 +29,18 @@ func registerGetPipelineByIdTool(s *server.MCPServer, cfg *config.Config) {
 		},
 	)
 	log.Println("  - get_pipeline_by_id")
+}
+
+// registerGetLatestPipelineByServiceIdTool registers the get_latest_pipeline_by_service_id tool.
+func registerGetLatestPipelineByServiceIdTool(s *server.MCPServer, cfg *config.Config) {
+	s.AddTool(
+		CreateGetLatestPipelineByServiceIdTool(),
+		func(arguments map[string]interface{}) (*mcp.CallToolResult, error) {
+			ctx := auth.GetContextWithAPIKey(context.Background())
+			return HandleGetLatestPipelineByServiceId(ctx, arguments, cfg)
+		},
+	)
+	log.Println("  - get_latest_pipeline_by_service_id")
 }
 
 // registerGetPipelineBuildLogsTool registers the get_pipeline_build_logs tool.

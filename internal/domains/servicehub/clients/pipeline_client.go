@@ -8,6 +8,7 @@ import (
 
 	pipelinev1grpc "buf.build/gen/go/blintora/apis/grpc/go/ai/planton/servicehub/pipeline/v1/pipelinev1grpc"
 	pipelinev1 "buf.build/gen/go/blintora/apis/protocolbuffers/go/ai/planton/servicehub/pipeline/v1"
+	servicev1 "buf.build/gen/go/blintora/apis/protocolbuffers/go/ai/planton/servicehub/service/v1"
 	commonauth "github.com/plantoncloud-inc/mcp-server-planton/internal/common/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -95,6 +96,37 @@ func (c *PipelineClient) GetById(ctx context.Context, pipelineID string) (*pipel
 	}
 
 	log.Printf("Successfully retrieved pipeline: %s", pipelineID)
+
+	return resp, nil
+}
+
+// GetLastPipelineByServiceId retrieves the most recent pipeline for a service.
+//
+// This method makes an authenticated gRPC call to Planton Cloud Service Hub APIs
+// to fetch the latest pipeline execution for a given service. The API validates
+// the user's API key and checks FGA permissions.
+//
+// Args:
+//   - ctx: Context for the request
+//   - serviceID: Service ID (e.g., "svc-abc123")
+//
+// Returns the full Pipeline object or an error.
+func (c *PipelineClient) GetLastPipelineByServiceId(ctx context.Context, serviceID string) (*pipelinev1.Pipeline, error) {
+	log.Printf("Querying latest pipeline for service: %s", serviceID)
+
+	// Create request
+	req := &servicev1.ServiceId{
+		Value: serviceID,
+	}
+
+	// Make gRPC call
+	resp, err := c.client.GetLastPipelineByServiceId(ctx, req)
+	if err != nil {
+		log.Printf("gRPC error querying latest pipeline for service %s: %v", serviceID, err)
+		return nil, err
+	}
+
+	log.Printf("Successfully retrieved latest pipeline for service: %s", serviceID)
 
 	return resp, nil
 }
