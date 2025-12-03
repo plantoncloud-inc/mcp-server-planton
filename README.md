@@ -160,6 +160,9 @@ The MCP server provides tools for querying and managing Planton Cloud resources:
 - `get_service_by_org_by_slug` - Get service by organization and name
 - `list_service_branches` - List Git branches for a service's repository
 - `get_tekton_pipeline` - Get complete Tekton pipeline definition with YAML by ID or org/name
+- `get_pipeline_by_id` - Get pipeline execution details by pipeline ID
+- `get_latest_pipeline_by_service_id` - Get most recent pipeline execution for a service
+- `get_pipeline_build_logs` - Stream and retrieve build logs for a pipeline
 
 ### Connect (Credentials)
 - `get_github_credential_for_service` - Get GitHub credential for a service

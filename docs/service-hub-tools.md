@@ -245,6 +245,52 @@ Gets detailed information about a pipeline execution by its ID.
 - Investigate pipeline timing and duration
 - Understand build stage progress before looking at logs
 
+### get_latest_pipeline_by_service_id
+
+Gets the most recent pipeline execution for a service by service ID.
+
+**Input:**
+```json
+{
+  "service_id": "svc-xyz789"
+}
+```
+
+**Output:**
+```json
+{
+  "id": "pipe-xyz789",
+  "slug": "backend-api-main-abc123",
+  "name": "Backend API - main - abc123",
+  "org": "org-abc123",
+  "service_id": "svc-xyz789",
+  "commit_sha": "abc123def456",
+  "branch": "main",
+  "status": {
+    "progress_status": "WORKFLOW_EXECUTION_STATUS_COMPLETED",
+    "progress_result": "WORKFLOW_EXECUTION_RESULT_SUCCEEDED",
+    "status_reason": "",
+    "start_time": "2025-12-03T10:15:30Z",
+    "end_time": "2025-12-03T10:18:45Z",
+    "build_stage": {
+      "status": "WORKFLOW_EXECUTION_STATUS_COMPLETED",
+      "result": "WORKFLOW_EXECUTION_RESULT_SUCCEEDED",
+      "status_reason": "",
+      "start_time": "2025-12-03T10:15:30Z",
+      "end_time": "2025-12-03T10:17:20Z"
+    }
+  },
+  "created_at": "2025-12-03T10:15:25Z",
+  "updated_at": "2025-12-03T10:18:45Z"
+}
+```
+
+**Use Cases:**
+- Get the latest pipeline when troubleshooting a service without knowing the pipeline ID
+- Check most recent build/deploy status for a service
+- Quickly access latest pipeline details when you have service name or ID
+- Workflow: service lookup → latest pipeline → logs → troubleshooting
+
 ### get_pipeline_build_logs
 
 Streams and retrieves all build logs for a pipeline execution.
